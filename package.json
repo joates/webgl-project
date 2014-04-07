@@ -1,0 +1,31 @@
+{
+  "name": "webgl-project",
+  "version": "0.0.0",
+  "description": "Scaffolding code to quick-start a new Three.js webgl project.",
+  "dependencies": {
+    "domready": "~1.0.4",
+    "raf": "~0.1.1"
+  },
+  "devDependencies": {
+    "watchify": "~0.6.4"
+  },
+"scripts": {
+    "watch": "watchify src/index.js -o public/main.js &",
+    "build": "browserify src/index.js -o public/main.js",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/joates/webgl-project.git"
+  },
+  "keywords": [
+    "webgl",
+    "threejs"
+  ],
+  "author": "joates (http://joat.es)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/joates/webgl-project/issues"
+  },
+  "homepage": "https://github.com/joates/webgl-project"
+}

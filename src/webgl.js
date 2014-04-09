@@ -24,13 +24,14 @@ module.exports = {
                   domready(function() {
                     scene.add(light)
                     scene.add(self.ground())
-
-                    //scene.add(new THREE.AxisHelper(100))
-
                     scene.add(new THREE.AmbientLight(0xff9000))
                     scene.fog = new THREE.Fog(0xaabfee, 3000, 8000)
-                    controls.maxPolarAngle = Math.PI / 2
-                    camera.position.set(0, 250, 500)
+
+                    controls.noZoom = true                    // noZoom and..
+                    controls.noKeys = true                    // noKeys, thanks OrbitControls.
+                    controls.minPolarAngle = Math.PI / 2.9
+                    controls.maxPolarAngle = Math.PI / 2.1    // don't stray too far from the horizon.
+                    camera.position.set(0, 250, 2000)
 
                     self.renderer.setSize(width, height)
                     self.renderer.setClearColor(scene.fog.color, 1)
@@ -53,6 +54,7 @@ module.exports = {
                     })
 
                     window.addEventListener('resize', self.resize.bind(self), false)
+                    document.addEventListener('keydown', self.keyPress.bind(self), false)
                   })
                 })
               }
@@ -81,6 +83,8 @@ module.exports = {
               }
 
   , update:   function(dt) {
+                camera.position.y = 250                       // altitude locked.
+                camera.lookAt(new THREE.Vector3(0, 200, 0))   // orientation locked.
                 light.position = camera.position.clone()
                 light.position.y += 5000
                 controls.update()
@@ -97,6 +101,38 @@ module.exports = {
                 this.renderer.setSize(width, height)
                 camera.aspect = width / height
                 camera.updateProjectionMatrix()
+              }
+
+  , keyPress: function(event) {
+                switch(event.which || event.keyCode) {
+
+                  case 38: /*up*/
+                  case 87: /*W*/
+                    this.movement({ x: 1, z: 0 }); break
+
+                  case 40: /*down*/
+                  case 83: /*S*/
+                    this.movement({ x:-1, z: 0 }); break
+
+                  case 37: /*left*/
+                  case 65: /*A*/
+                    this.movement({ x: 0, z:-1 }); break
+
+                  case 39: /*right*/
+                  case 68: /*D*/
+                    this.movement({ x: 0, z: 1 }); break
+
+                }
+              }
+
+  , movement: function(v) {
+                var scale = 0.005
+                  , vec = new THREE.Vector3(v.x, 0, v.z)
+                vec.applyEuler(camera.rotation)
+                vec.applyAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI + Math.PI / 2)
+                floorMesh.material.map.offset.x -= vec.x * scale
+                floorMesh.material.map.offset.y += vec.z * scale
+                floorMesh.material.map.needsUpdate = true
               }
 
 }
